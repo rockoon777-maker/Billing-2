@@ -1,0 +1,13 @@
+{
+  "name": "Billing Calculator",
+  "short_name": "Billing App",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f4f9",
+  "theme_color": "#27ae60",
+  "icons": [{
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Calculator_icon.svg/128px-Calculator_icon.svg.png",
+      "sizes": "128x128",
+      "type": "image/png"
+  }]
+}
