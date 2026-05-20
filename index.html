@@ -153,6 +153,11 @@ function clearForm() {
 
 function calculateSpoilage(volume) { return volume < 30 ? 0 : Math.round(volume * 0.02); }
 
+// Helper function to force perfect 2-decimal rounding like an accountant
+function round2(num) {
+    return Math.round((num + Number.EPSILON) * 100) / 100;
+}
+
 function calculateBilling() {
     const a4ColorRate = Number(document.getElementById("a4Rate").value) || 0;
     const a3ColorRate = Number(document.getElementById("a3Rate").value) || 0;
@@ -182,7 +187,7 @@ function calculateBilling() {
     const m3Net = m3Gross - m3Spoil;
     const m3Charge = m3Net * a3ColorRate;
 
-    // --- NEW M2 Math (Spoilage calculated FIRST) ---
+    // --- M2 Math ---
     const m2Gross = m2Pres - m2Prev; 
     const m2Spoil = calculateSpoilage(m2Gross); 
     const m2Net = m2Gross - m2Spoil;
@@ -192,42 +197,48 @@ function calculateBilling() {
     let m2Charge = 0;
 
     if (isFreeMode) {
-        // DD Chua Style: Deduct free copies from Net
         document.getElementById("lblM2Base").innerText = "Less Free Copies:";
         m2BaseCopies = m2Threshold;
         m2ExcessCopies = Math.max(0, m2Net - m2Threshold);
         m2Charge = m2ExcessCopies * blackExcessRate;
-        
         document.getElementById("outM2Base").innerText = "-" + m2BaseCopies;
     } else {
-        // J&K Style: Minimum Copies Tiered Billing
         document.getElementById("lblM2Base").innerText = "Base/Min Copies:";
-        
-        // If they printed over the limit, Base is exactly the threshold. 
-        // If they printed under the limit, Base is still the threshold (ensuring Minimum Billing).
         if (m2Net >= m2Threshold) {
             m2BaseCopies = m2Threshold;
             m2ExcessCopies = m2Net - m2Threshold;
         } else {
-            // Charging for actuals up to the limit if they don't hit the minimum
             m2BaseCopies = m2Net; 
             m2ExcessCopies = 0;
         }
-        
         m2Charge = (m2BaseCopies * blackBaseRate) + (m2ExcessCopies * blackExcessRate);
         document.getElementById("outM2Base").innerText = m2BaseCopies + " @ ₱" + blackBaseRate.toFixed(2);
     }
 
-    // --- Totals and Taxes ---
+    // --- Totals and STRICT Accounting Taxes ---
     const copyCharges = m1Charge + m2Charge + m3Charge;
     const subTotal = copyCharges + monthlyRental;
 
-    let vatableSales = 0; let exemptSales = 0; let vatAmount = 0; let whtAmount = 0;
-    if (isVatable) { vatableSales = subTotal / 1.12; vatAmount = subTotal - vatableSales; } else { exemptSales = subTotal; }
+    let vatableSales = 0; 
+    let exemptSales = 0; 
+    let vatAmount = 0; 
+    let whtAmount = 0;
+    let finalAmountDue = subTotal; // Start with subtotal, rebuild with strict rounded parts
+
+    if (isVatable) { 
+        vatableSales = round2(subTotal / 1.12); 
+        vatAmount = round2(vatableSales * 0.12);
+        finalAmountDue = vatableSales + vatAmount; // Rebuilding avoids the 1 cent difference
+    } else { 
+        exemptSales = subTotal; 
+    }
     
     const baseForWHT = isVatable ? vatableSales : exemptSales;
-    if (hasWHT) { whtAmount = baseForWHT * 0.02; }
-    const finalAmountDue = subTotal - whtAmount;
+    
+    if (hasWHT) { 
+        whtAmount = round2(baseForWHT * 0.02); 
+        finalAmountDue = finalAmountDue - whtAmount;
+    }
 
     // --- UI Update ---
     document.getElementById("outM1Gross").innerText = m1Gross; document.getElementById("outM3Sub").innerText = m3Gross;
