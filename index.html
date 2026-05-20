@@ -31,21 +31,36 @@
         .highlight-row { color: #2980b9; font-weight: bold; }
         .total-row { font-weight: bold; font-size: 18px; color: #c0392b; border-top: 2px solid #333; padding-top: 8px; margin-top: 8px; }
         .charge-row { color: #16a085; font-weight: bold; font-size: 15px; border-top: 1px solid #1abc9c; padding-top: 4px; margin-top: 4px; }
+        .accent-box { background: #d1f2eb; padding: 10px; border-radius: 5px; margin-top: 10px; border: 1px dashed #16a085; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>Billing Calculator</h2>
+    
     <details open>
         <summary>⚙️ Contract Rates & Settings</summary>
         <div class="grid-2">
             <div><label>A4 Color Rate (₱)</label><input type="number" id="a4Rate" step="0.01"></div>
             <div><label>A3 Color Rate (₱)</label><input type="number" id="a3Rate" step="0.01"></div>
-            <div><label>Black Rate (₱)</label><input type="number" id="blackRate" step="0.01"></div>
-            <div><label>Monthly Rental (₱)</label><input type="number" id="rentalFee" step="0.01"></div>
-            <div style="grid-column: span 2;"><label>Free Black Copies Allowance</label><input type="number" id="freeBlack"></div>
         </div>
+        
+        <div class="accent-box">
+            <label style="color:#16a085; font-size:16px;"><strong>M2 Black Pricing Model</strong></label>
+            <div class="grid-2">
+                <div style="grid-column: span 2;"><label>Volume Threshold (Free limit OR Min Copies)</label><input type="number" id="m2Threshold"></div>
+                <div><label>Excess Rate (₱)</label><input type="number" id="blackExcessRate" step="0.01"></div>
+                <div><label>Base Rate (₱)<br><small>(For tiered only)</small></label><input type="number" id="blackBaseRate" step="0.01"></div>
+            </div>
+            <label style="font-weight:normal; margin-top:15px; display:block;">
+                <input type="checkbox" id="isFreeMode" checked> <strong>Apply as FREE Copies</strong><br>
+                <small style="color:#555; margin-left:25px;">Uncheck this for Tiered "Minimum Copies / Month" billing (like J&K)</small>
+            </label>
+        </div>
+
+        <div><label>Monthly Rental (₱)</label><input type="number" id="rentalFee" step="0.01"></div>
+
         <div class="checkbox-group">
             <label><input type="checkbox" id="isVatable"> 12% VAT Applicable</label><br><br>
             <label><input type="checkbox" id="hasWht"> 2% Withholding Tax</label>
@@ -79,19 +94,22 @@
             <div class="row"><span>M1 Gross (Color):</span> <span id="outM1Gross">0</span></div>
             <div class="row"><span>Less M3:</span> <span id="outM3Sub">0</span></div>
             <div class="row"><span>M1 Adjusted:</span> <span id="outM1Adj">0</span></div>
-            <div class="row"><span>M1 Spoilage:</span> <span id="outM1Spoil">0</span></div>
+            <div class="row"><span>M1 Spoilage (2%):</span> <span id="outM1Spoil">0</span></div>
             <div class="row"><span>M1 NET BILLABLE:</span> <span id="outM1Net">0</span></div>
-            <div class="row charge-row"><span>M1 Charge:</span> <span id="outM1Charge">₱0.00</span></div><br>
+            <div class="row charge-row"><span>M1 Charge:</span> <span id="outM1Charge">₱0.00</span></div>
+            <br>
             
             <div class="row"><span>M2 Gross (Black):</span> <span id="outM2Gross">0</span></div>
-            <div class="row highlight-row"><span>Less Free Copies:</span> <span id="outFreeBlack">0</span></div>
-            <div class="row"><span>Billable Excess:</span> <span id="outM2Excess">0</span></div>
-            <div class="row"><span>M2 Spoilage:</span> <span id="outM2Spoil">0</span></div>
-            <div class="row"><span>M2 NET BILLABLE:</span> <span id="outM2Net">0</span></div>
-            <div class="row charge-row"><span>M2 Charge:</span> <span id="outM2Charge">₱0.00</span></div><br>
+            <div class="row"><span>M2 Spoilage (2%):</span> <span id="outM2Spoil">0</span></div>
+            <div class="row" style="font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><span>M2 NET COPIES:</span> <span id="outM2Net">0</span></div>
+            
+            <div class="row highlight-row" style="margin-top: 8px;"><span id="lblM2Base">Less Free Copies:</span> <span id="outM2Base">0</span></div>
+            <div class="row"><span>Excess Copies:</span> <span id="outM2Excess">0</span></div>
+            <div class="row charge-row"><span>M2 Charge:</span> <span id="outM2Charge">₱0.00</span></div>
+            <br>
             
             <div class="row"><span>M3 Gross (A3 Color):</span> <span id="outM3Gross">0</span></div>
-            <div class="row"><span>M3 Spoilage:</span> <span id="outM3Spoil">0</span></div>
+            <div class="row"><span>M3 Spoilage (2%):</span> <span id="outM3Spoil">0</span></div>
             <div class="row"><span>M3 NET BILLABLE:</span> <span id="outM3Net">0</span></div>
             <div class="row charge-row"><span>M3 Charge:</span> <span id="outM3Charge">₱0.00</span></div>
         </div>
@@ -138,9 +156,12 @@ function calculateSpoilage(volume) { return volume < 30 ? 0 : Math.round(volume 
 function calculateBilling() {
     const a4ColorRate = Number(document.getElementById("a4Rate").value) || 0;
     const a3ColorRate = Number(document.getElementById("a3Rate").value) || 0;
-    const blackRate = Number(document.getElementById("blackRate").value) || 0;
+    const blackExcessRate = Number(document.getElementById("blackExcessRate").value) || 0;
+    const blackBaseRate = Number(document.getElementById("blackBaseRate").value) || 0;
+    const m2Threshold = Number(document.getElementById("m2Threshold").value) || 0;
+    const isFreeMode = document.getElementById("isFreeMode").checked;
+    
     const monthlyRental = Number(document.getElementById("rentalFee").value) || 0;
-    const freeBlack = Number(document.getElementById("freeBlack").value) || 0;
     const isVatable = document.getElementById("isVatable").checked;
     const hasWHT = document.getElementById("hasWht").checked;
 
@@ -148,18 +169,56 @@ function calculateBilling() {
     const m2Pres = Number(document.getElementById("m2Pres").value) || 0; const m2Prev = Number(document.getElementById("m2Prev").value) || 0;
     const m3Pres = Number(document.getElementById("m3Pres").value) || 0; const m3Prev = Number(document.getElementById("m3Prev").value) || 0;
 
-    const m1Gross = m1Pres - m1Prev; const m2Gross = m2Pres - m2Prev; const m3Gross = m3Pres - m3Prev;
+    // --- M1 Math ---
+    const m1Gross = m1Pres - m1Prev; 
+    const m3Gross = m3Pres - m3Prev;
     const m1Adjusted = m1Gross - m3Gross;
-    const m1Spoil = calculateSpoilage(m1Adjusted); const m1Net = m1Adjusted - m1Spoil;
-    const m3Spoil = calculateSpoilage(m3Gross); const m3Net = m3Gross - m3Spoil;
-
-    let billableM2Gross = Math.max(0, m2Gross - freeBlack); 
-    const m2Spoil = calculateSpoilage(billableM2Gross); const m2Net = billableM2Gross - m2Spoil;
-
+    const m1Spoil = calculateSpoilage(m1Adjusted); 
+    const m1Net = m1Adjusted - m1Spoil;
     const m1Charge = m1Net * a4ColorRate;
-    const m2Charge = m2Net * blackRate;
+
+    // --- M3 Math ---
+    const m3Spoil = calculateSpoilage(m3Gross); 
+    const m3Net = m3Gross - m3Spoil;
     const m3Charge = m3Net * a3ColorRate;
 
+    // --- NEW M2 Math (Spoilage calculated FIRST) ---
+    const m2Gross = m2Pres - m2Prev; 
+    const m2Spoil = calculateSpoilage(m2Gross); 
+    const m2Net = m2Gross - m2Spoil;
+
+    let m2BaseCopies = 0;
+    let m2ExcessCopies = 0;
+    let m2Charge = 0;
+
+    if (isFreeMode) {
+        // DD Chua Style: Deduct free copies from Net
+        document.getElementById("lblM2Base").innerText = "Less Free Copies:";
+        m2BaseCopies = m2Threshold;
+        m2ExcessCopies = Math.max(0, m2Net - m2Threshold);
+        m2Charge = m2ExcessCopies * blackExcessRate;
+        
+        document.getElementById("outM2Base").innerText = "-" + m2BaseCopies;
+    } else {
+        // J&K Style: Minimum Copies Tiered Billing
+        document.getElementById("lblM2Base").innerText = "Base/Min Copies:";
+        
+        // If they printed over the limit, Base is exactly the threshold. 
+        // If they printed under the limit, Base is still the threshold (ensuring Minimum Billing).
+        if (m2Net >= m2Threshold) {
+            m2BaseCopies = m2Threshold;
+            m2ExcessCopies = m2Net - m2Threshold;
+        } else {
+            // Charging for actuals up to the limit if they don't hit the minimum
+            m2BaseCopies = m2Net; 
+            m2ExcessCopies = 0;
+        }
+        
+        m2Charge = (m2BaseCopies * blackBaseRate) + (m2ExcessCopies * blackExcessRate);
+        document.getElementById("outM2Base").innerText = m2BaseCopies + " @ ₱" + blackBaseRate.toFixed(2);
+    }
+
+    // --- Totals and Taxes ---
     const copyCharges = m1Charge + m2Charge + m3Charge;
     const subTotal = copyCharges + monthlyRental;
 
@@ -170,10 +229,15 @@ function calculateBilling() {
     if (hasWHT) { whtAmount = baseForWHT * 0.02; }
     const finalAmountDue = subTotal - whtAmount;
 
+    // --- UI Update ---
     document.getElementById("outM1Gross").innerText = m1Gross; document.getElementById("outM3Sub").innerText = m3Gross;
     document.getElementById("outM1Adj").innerText = m1Adjusted; document.getElementById("outM1Spoil").innerText = m1Spoil; document.getElementById("outM1Net").innerText = m1Net;
-    document.getElementById("outM2Gross").innerText = m2Gross; document.getElementById("outFreeBlack").innerText = "-" + freeBlack;
-    document.getElementById("outM2Excess").innerText = billableM2Gross; document.getElementById("outM2Spoil").innerText = m2Spoil; document.getElementById("outM2Net").innerText = m2Net;
+    
+    document.getElementById("outM2Gross").innerText = m2Gross; 
+    document.getElementById("outM2Spoil").innerText = m2Spoil; 
+    document.getElementById("outM2Net").innerText = m2Net; 
+    document.getElementById("outM2Excess").innerText = m2ExcessCopies; 
+    
     document.getElementById("outM3Gross").innerText = m3Gross; document.getElementById("outM3Spoil").innerText = m3Spoil; document.getElementById("outM3Net").innerText = m3Net;
     
     document.getElementById("outM1Charge").innerText = "₱" + m1Charge.toFixed(2);
@@ -188,7 +252,6 @@ function calculateBilling() {
     document.getElementById("results").style.display = "block";
 }
 
-// THIS REGISTERS THE OFFLINE SERVICE WORKER
 if('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
 }
