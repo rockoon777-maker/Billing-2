@@ -22,9 +22,13 @@
         .btn-main:active { background-color: #2ecc71; }
         .btn-clear { width: 100%; padding: 15px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; font-size: 18px; font-weight: bold; margin-top: 10px; cursor: pointer; }
         .btn-clear:active { background-color: #c0392b; }
-        .btn-scan { background-color: #3498db; color: white; border: none; border-radius: 5px; padding: 10px; margin-top: 5px; margin-left: 5px; font-weight: bold; cursor: pointer; width: 110px; font-size: 12px; }
+        
+        /* Updated Scan Button & Input Group to fit perfectly in a half-column */
+        .input-group { display: flex; align-items: center; margin-top: 5px; }
+        .input-group input { margin-top: 0; flex: 1; min-width: 0; }
+        .btn-scan { background-color: #3498db; color: white; border: none; border-radius: 5px; padding: 10px 12px; margin-left: 5px; font-weight: bold; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
         .btn-scan:active { background-color: #2980b9; }
-        .input-group { display: flex; align-items: center; }
+
         .output-card { background-color: #e8f6f3; border-left: 5px solid #1abc9c; padding: 15px; margin-top: 15px; border-radius: 5px; }
         .row { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed #ccc; padding-bottom: 4px; }
         .row:last-child { border-bottom: none; }
@@ -82,18 +86,35 @@
 
     <div id="standardMeters">
         <div class="grid-2">
-            <div style="grid-column: span 2;">
+            <div>
                 <label>M1 Present (Color)</label>
                 <div class="input-group">
-                    <input type="text" id="m1Pres" placeholder="Type or upload image">
-                    <button class="btn-scan" onclick="document.getElementById('cameraInput').click()">📷 Scan</button>
+                    <input type="text" id="m1Pres" placeholder="Present">
+                    <button class="btn-scan" onclick="document.getElementById('cameraInput').click()" title="Scan Camera">📷</button>
                 </div>
             </div>
-            <div><label>M1 Previous</label><input type="number" id="m1Prev"></div>
-            <div><label>M2 Present (Black)</label><input type="number" id="m2Pres"></div>
-            <div><label>M2 Previous</label><input type="number" id="m2Prev"></div>
-            <div><label>M3 Present (A3 Color)</label><input type="number" id="m3Pres"></div>
-            <div><label>M3 Previous</label><input type="number" id="m3Prev"></div>
+            <div>
+                <label>M1 Previous</label>
+                <input type="number" id="m1Prev" placeholder="Previous">
+            </div>
+            
+            <div>
+                <label>M2 Present (Black)</label>
+                <input type="number" id="m2Pres" placeholder="Present">
+            </div>
+            <div>
+                <label>M2 Previous</label>
+                <input type="number" id="m2Prev" placeholder="Previous">
+            </div>
+            
+            <div>
+                <label>M3 Present (A3 Color)</label>
+                <input type="number" id="m3Pres" placeholder="Present">
+            </div>
+            <div>
+                <label>M3 Previous</label>
+                <input type="number" id="m3Prev" placeholder="Previous">
+            </div>
         </div>
     </div>
 
@@ -156,7 +177,6 @@
 </div>
 
 <script>
-// Toggle UI between Standard and Fleet modes
 function toggleMode() {
     const mode = document.getElementById("billingMode").value;
     if (mode === 'standard') {
@@ -187,11 +207,9 @@ async function processImage(event) {
 }
 
 function clearForm() {
-    // Clear Standard
     document.getElementById("m1Pres").value = ""; document.getElementById("m1Prev").value = "";
     document.getElementById("m2Pres").value = ""; document.getElementById("m2Prev").value = "";
     document.getElementById("m3Pres").value = ""; document.getElementById("m3Prev").value = "";
-    // Clear Fleet
     for(let i=1; i<=4; i++){
         document.getElementById("f"+i+"Pres").value = "";
         document.getElementById("f"+i+"Prev").value = "";
@@ -206,8 +224,6 @@ function round2(num) { return Math.round((num + Number.EPSILON) * 100) / 100; }
 
 function calculateBilling() {
     const mode = document.getElementById("billingMode").value;
-    
-    // Shared Rates
     const monthlyRental = Number(document.getElementById("rentalFee").value) || 0;
     const isVatable = document.getElementById("isVatable").checked;
     const hasWHT = document.getElementById("hasWht").checked;
@@ -226,17 +242,14 @@ function calculateBilling() {
         const m2Pres = Number(document.getElementById("m2Pres").value) || 0; const m2Prev = Number(document.getElementById("m2Prev").value) || 0;
         const m3Pres = Number(document.getElementById("m3Pres").value) || 0; const m3Prev = Number(document.getElementById("m3Prev").value) || 0;
 
-        // M1
         const m1Gross = m1Pres - m1Prev; const m3Gross = m3Pres - m3Prev;
         const m1Adjusted = m1Gross - m3Gross;
         const m1Spoil = calculateSpoilage(m1Adjusted); const m1Net = m1Adjusted - m1Spoil;
         const m1Charge = m1Net * a4ColorRate;
 
-        // M3
         const m3Spoil = calculateSpoilage(m3Gross); const m3Net = m3Gross - m3Spoil;
         const m3Charge = m3Net * a3ColorRate;
 
-        // M2
         const m2Gross = m2Pres - m2Prev; 
         const m2Spoil = calculateSpoilage(m2Gross); const m2Net = m2Gross - m2Spoil;
 
@@ -262,7 +275,6 @@ function calculateBilling() {
 
         copyCharges = m1Charge + m2Charge + m3Charge;
 
-        // Update Standard UI
         document.getElementById("outM1Gross").innerText = m1Gross; document.getElementById("outM3Sub").innerText = m3Gross;
         document.getElementById("outM1Adj").innerText = m1Adjusted; document.getElementById("outM1Spoil").innerText = m1Spoil; document.getElementById("outM1Net").innerText = m1Net;
         document.getElementById("outM2Gross").innerText = m2Gross; document.getElementById("outM2Spoil").innerText = m2Spoil; document.getElementById("outM2Net").innerText = m2Net; document.getElementById("outM2Excess").innerText = m2ExcessCopies; 
@@ -270,7 +282,6 @@ function calculateBilling() {
         document.getElementById("outM1Charge").innerText = "₱" + m1Charge.toFixed(2); document.getElementById("outM2Charge").innerText = "₱" + m2Charge.toFixed(2); document.getElementById("outM3Charge").innerText = "₱" + m3Charge.toFixed(2);
 
     } else {
-        // FLEET MODE LOGIC
         let fleetHtml = "";
         for(let i=1; i<=4; i++){
             const pres = Number(document.getElementById("f"+i+"Pres").value) || 0;
@@ -296,9 +307,7 @@ function calculateBilling() {
         document.getElementById("fleetRowsContainer").innerHTML = fleetHtml;
     }
 
-    // --- Totals and STRICT Accounting Taxes ---
     const subTotal = copyCharges + monthlyRental;
-
     let vatableSales = 0; let exemptSales = 0; let vatAmount = 0; let whtAmount = 0;
     let finalAmountDue = subTotal; 
 
@@ -311,7 +320,6 @@ function calculateBilling() {
     }
     
     const baseForWHT = isVatable ? vatableSales : exemptSales;
-    
     if (hasWHT) { 
         whtAmount = round2(baseForWHT * 0.02); 
         finalAmountDue = finalAmountDue - whtAmount;
@@ -335,4 +343,3 @@ if('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
-
