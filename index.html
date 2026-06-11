@@ -9,23 +9,18 @@
     <style>
         :root { --bg: #f4f4f9; --card: #ffffff; --text: #333; --accent: #1abc9c; --accent-light: #e8f6f3; }
         .dark-mode { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --accent: #1abc9c; --accent-light: #163630; }
-        body { font-family: Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; transition: 0.3s; }
-        .container { max-width: 400px; margin: auto; background: var(--card); padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-        .theme-btn { background: #34495e; color: white; border: none; padding: 5px 10px; border-radius: 5px; float: right; cursor: pointer; }
-        h2, h3 { text-align: center; color: var(--accent); margin-bottom: 10px; margin-top: 20px; }
-        label { font-weight: bold; display: block; margin-top: 10px; font-size: 14px; }
-        input[type="number"], input[type="text"], select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; background: var(--card); color: var(--text); font-size: 16px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        details { background: var(--accent-light); border: 1px solid var(--accent); border-radius: 5px; padding: 15px; margin-top: 15px; margin-bottom: 20px;}
-        summary { font-weight: bold; cursor: pointer; padding: 5px 0; outline: none; font-size: 16px;}
-        .btn-main { width: 100%; padding: 15px; background-color: #27ae60; color: white; border: none; border-radius: 5px; font-size: 18px; font-weight: bold; margin-top: 20px; cursor: pointer; }
-        .btn-clear { width: 100%; padding: 15px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; font-size: 18px; font-weight: bold; margin-top: 10px; cursor: pointer; }
-        .input-group { display: flex; align-items: center; margin-top: 5px; }
-        .btn-scan { background-color: #3498db; color: white; border: none; border-radius: 5px; padding: 10px 12px; margin-left: 5px; font-weight: bold; cursor: pointer; font-size: 18px; }
-        .output-card { background-color: var(--accent-light); border-left: 5px solid var(--accent); padding: 15px; margin-top: 15px; border-radius: 5px; }
-        .row { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed #777; padding-bottom: 4px; }
-        .charge-row { color: var(--accent); font-weight: bold; border-top: 1px solid var(--accent); padding-top: 4px; margin-top: 4px; }
-        .mode-box { background: #2c3e50; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 10px; transition: 0.3s; }
+        .container { max-width: 400px; margin: auto; background: var(--card); padding: 15px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .theme-btn { background: #34495e; color: white; border: none; padding: 8px 12px; border-radius: 6px; float: right; cursor: pointer; }
+        h2 { text-align: center; color: var(--accent); margin: 10px 0; }
+        label { font-weight: 600; display: block; margin-top: 12px; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 8px; background: var(--card); color: var(--text); font-size: 16px; box-sizing: border-box; }
+        .mode-box { background: #2c3e50; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .accent-box { background: var(--accent-light); padding: 12px; border-radius: 8px; margin-top: 15px; border: 1px dashed var(--accent); }
+        .btn-main { width: 100%; padding: 16px; background-color: #27ae60; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; margin-top: 20px; cursor: pointer; }
+        .btn-clear { width: 100%; padding: 16px; background-color: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+        .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #777; }
+        .output-card { background: var(--accent-light); border-left: 4px solid var(--accent); padding: 15px; margin-top: 15px; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -42,58 +37,50 @@
         </select>
     </div>
     
-    <details open>
+    <details>
         <summary>⚙️ Contract Rates</summary>
-        <div class="grid-2">
-            <div><label>A4 Color Rate</label><input type="number" id="a4Rate" step="0.01"></div>
-            <div><label>A3 Color Rate</label><input type="number" id="a3Rate" step="0.01"></div>
-        </div>
-        <div style="background:rgba(0,0,0,0.1); padding:10px; border-radius:5px; margin-top:10px;">
+        <label>A4 Color Rate</label><input type="number" id="a4Rate" step="0.01">
+        <label>A3 Color Rate</label><input type="number" id="a3Rate" step="0.01">
+        <div class="accent-box">
             <label>Black Pricing Model</label>
-            <div class="grid-2">
-                <div style="grid-column: span 2;"><label>Threshold</label><input type="number" id="m2Threshold"></div>
-                <div><label>Excess Rate</label><input type="number" id="blackExcessRate" step="0.01"></div>
-                <div><label>Base Rate</label><input type="number" id="blackBaseRate" step="0.01"></div>
-            </div>
-            <label style="font-weight:normal;"><input type="checkbox" id="isFreeMode" checked> Apply as Free Copies</label>
+            <label>Threshold</label><input type="number" id="m2Threshold">
+            <label>Excess Rate</label><input type="number" id="blackExcessRate" step="0.01">
+            <label>Base Rate</label><input type="number" id="blackBaseRate" step="0.01">
+            <label style="font-weight:normal; margin-top:10px;"><input type="checkbox" id="isFreeMode" checked> Apply as Free Copies</label>
         </div>
-        <div><label>Monthly Rental</label><input type="number" id="rentalFee" step="0.01"></div>
-        <div><label><input type="checkbox" id="isVatable"> 12% VAT</label> <label><input type="checkbox" id="hasWht"> 2% WHT</label></div>
+        <label>Monthly Rental</label><input type="number" id="rentalFee" step="0.01">
+        <label><input type="checkbox" id="isVatable"> 12% VAT</label>
+        <label><input type="checkbox" id="hasWht"> 2% WHT</label>
     </details>
 
-    <input type="file" id="cameraInput" accept="image/*" style="display: none;" onchange="processImage(event)">
-
+    <h3>Meter Input</h3>
     <div id="standardMeters">
-        <div class="grid-2">
-            <div><label>M1 Present</label><div class="input-group"><input type="text" id="m1Pres"><button class="btn-scan" onclick="document.getElementById('cameraInput').click()">📷</button></div></div>
-            <div><label>M1 Previous</label><input type="number" id="m1Prev"></div>
-            <div><label>M2 Present</label><input type="number" id="m2Pres"></div>
-            <div><label>M2 Previous</label><input type="number" id="m2Prev"></div>
-            <div><label>M3 Present</label><input type="number" id="m3Pres"></div>
-            <div><label>M3 Previous</label><input type="number" id="m3Prev"></div>
-        </div>
+        <label>M1 Present (Color)</label><div style="display:flex;"><input type="text" id="m1Pres"><button onclick="document.getElementById('cameraInput').click()" style="width:50px; margin-left:5px; border-radius:8px; border:none; background:#3498db; color:white;">📷</button></div>
+        <label>M1 Previous</label><input type="number" id="m1Prev">
+        <label>M2 Present (Black)</label><input type="number" id="m2Pres">
+        <label>M2 Previous</label><input type="number" id="m2Prev">
+        <label>M3 Present (A3)</label><input type="number" id="m3Pres">
+        <label>M3 Previous</label><input type="number" id="m3Prev">
     </div>
 
-    <div id="fleetMeters" style="display: none;">
-        <div class="grid-2">
-            <div><label>M1 Present</label><input type="number" id="f1Pres"></div><div><label>M1 Previous</label><input type="number" id="f1Prev"></div>
-            <div><label>M2 Present</label><input type="number" id="f2Pres"></div><div><label>M2 Previous</label><input type="number" id="f2Prev"></div>
-            <div><label>M3 Present</label><input type="number" id="f3Pres"></div><div><label>M3 Previous</label><input type="number" id="f3Prev"></div>
-            <div><label>M4 Present</label><input type="number" id="f4Pres"></div><div><label>M4 Previous</label><input type="number" id="f4Prev"></div>
-        </div>
+    <div id="fleetMeters" style="display:none;">
+        <label>Machine 1 (Pres/Prev)</label><input type="number" id="f1Pres"><input type="number" id="f1Prev">
+        <label>Machine 2 (Pres/Prev)</label><input type="number" id="f2Pres"><input type="number" id="f2Prev">
+        <label>Machine 3 (Pres/Prev)</label><input type="number" id="f3Pres"><input type="number" id="f3Prev">
+        <label>Machine 4 (Pres/Prev)</label><input type="number" id="f4Pres"><input type="number" id="f4Prev">
     </div>
 
+    <input type="file" id="cameraInput" accept="image/*" style="display:none;" onchange="processImage(event)">
     <button class="btn-main" onclick="calculateBilling()">Generate</button>
     <button class="btn-clear" onclick="clearForm()">Clear</button>
 
-    <div id="results" style="display: none;">
-        <h3>Form</h3>
+    <div id="results" style="display:none;">
         <div id="standardOutput" class="output-card">
             <div class="row"><span>M1 Charge:</span> <span id="outM1Charge">₱0.00</span></div>
             <div class="row"><span>M2 Charge:</span> <span id="outM2Charge">₱0.00</span></div>
             <div class="row"><span>M3 Charge:</span> <span id="outM3Charge">₱0.00</span></div>
         </div>
-        <div id="fleetOutput" class="output-card" style="display: none;"><div id="fleetRowsContainer"></div></div>
+        <div id="fleetOutput" class="output-card" style="display:none;"><div id="fleetRowsContainer"></div></div>
         <div class="output-card">
             <div class="row"><span>Sub Total:</span> <span id="outSubTotal">₱0.00</span></div>
             <div class="row" style="font-weight:bold;"><span>Amount Due:</span> <span id="outTotal">₱0.00</span></div>
@@ -102,79 +89,31 @@
 </div>
 
 <script>
-function toggleTheme() {
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-}
+function toggleTheme() { document.body.classList.toggle('dark-mode'); localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light'); }
 if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
-
-function toggleMode() {
-    const mode = document.getElementById("billingMode").value;
-    document.getElementById("standardMeters").style.display = mode === 'standard' ? 'block' : 'none';
-    document.getElementById("fleetMeters").style.display = mode === 'fleet' ? 'block' : 'none';
-    document.getElementById("standardOutput").style.display = mode === 'standard' ? 'block' : 'none';
-    document.getElementById("fleetOutput").style.display = mode === 'fleet' ? 'block' : 'none';
-}
-
-function round2(num) { return Math.round((num + Number.EPSILON) * 100) / 100; }
-function calculateSpoilage(volume) { return volume < 30 ? 0 : Math.round(volume * 0.02); }
-
+function toggleMode() { const m = document.getElementById("billingMode").value; document.getElementById("standardMeters").style.display = m === 'standard' ? 'block' : 'none'; document.getElementById("fleetMeters").style.display = m === 'fleet' ? 'block' : 'none'; document.getElementById("standardOutput").style.display = m === 'standard' ? 'block' : 'none'; document.getElementById("fleetOutput").style.display = m === 'fleet' ? 'block' : 'none'; }
+async function processImage(event) { const r = await Tesseract.recognize(event.target.files[0], 'eng'); document.getElementById('m1Pres').value = r.data.text.replace(/[^0-9]/g, ''); }
+function clearForm() { location.reload(); }
+function round2(n) { return Math.round((n + Number.EPSILON) * 100) / 100; }
 function calculateBilling() {
-    const mode = document.getElementById("billingMode").value;
-    const monthlyRental = Number(document.getElementById("rentalFee").value) || 0;
-    const blackBaseRate = Number(document.getElementById("blackBaseRate").value) || 0;
-    let copyCharges = 0;
-
-    if (mode === 'standard') {
-        const a4ColorRate = Number(document.getElementById("a4Rate").value) || 0;
-        const a3ColorRate = Number(document.getElementById("a3Rate").value) || 0;
-        const blackExcessRate = Number(document.getElementById("blackExcessRate").value) || 0;
-        const m2Threshold = Number(document.getElementById("m2Threshold").value) || 0;
-        const isFreeMode = document.getElementById("isFreeMode").checked;
-
-        const m1Gross = (Number(document.getElementById("m1Pres").value)||0) - (Number(document.getElementById("m1Prev").value)||0);
-        const m3Gross = (Number(document.getElementById("m3Pres").value)||0) - (Number(document.getElementById("m3Prev").value)||0);
-        const m1Net = (m1Gross - m3Gross) - calculateSpoilage(m1Gross - m3Gross);
-        const m3Net = m3Gross - calculateSpoilage(m3Gross);
-        const m2Net = (Number(document.getElementById("m2Pres").value) - Number(document.getElementById("m2Prev").value)) - calculateSpoilage(Number(document.getElementById("m2Pres").value) - Number(document.getElementById("m2Prev").value));
-        
-        let m2Charge = isFreeMode ? (Math.max(0, m2Net - m2Threshold) * blackExcessRate) : ((Math.min(m2Net, m2Threshold) * blackBaseRate) + (Math.max(0, m2Net - m2Threshold) * blackExcessRate));
-        
-        copyCharges = (m1Net * a4ColorRate) + m2Charge + (m3Net * a3ColorRate);
-        document.getElementById("outM1Charge").innerText = "₱" + (m1Net * a4ColorRate).toFixed(2);
-        document.getElementById("outM2Charge").innerText = "₱" + m2Charge.toFixed(2);
-        document.getElementById("outM3Charge").innerText = "₱" + (m3Net * a3ColorRate).toFixed(2);
+    const m = document.getElementById("billingMode").value, rental = Number(document.getElementById("rentalFee").value)||0;
+    let charges = 0;
+    if (m === 'standard') {
+        const a4 = Number(document.getElementById("a4Rate").value)||0, a3 = Number(document.getElementById("a3Rate").value)||0, ex = Number(document.getElementById("blackExcessRate").value)||0, base = Number(document.getElementById("blackBaseRate").value)||0, thresh = Number(document.getElementById("m2Threshold").value)||0, free = document.getElementById("isFreeMode").checked;
+        const m1 = ((Number(document.getElementById("m1Pres").value)||0) - (Number(document.getElementById("m1Prev").value)||0)), m3 = ((Number(document.getElementById("m3Pres").value)||0) - (Number(document.getElementById("m3Prev").value)||0)), m2 = ((Number(document.getElementById("m2Pres").value)||0) - (Number(document.getElementById("m2Prev").value)||0));
+        const m1Net = (m1 - m3) - Math.round((m1 - m3)*0.02), m3Net = m3 - Math.round(m3*0.02), m2Net = m2 - Math.round(m2*0.02);
+        const m2Charge = free ? (Math.max(0, m2Net - thresh) * ex) : ((Math.min(m2Net, thresh) * base) + (Math.max(0, m2Net - thresh) * ex));
+        charges = (m1Net * a4) + m2Charge + (m3Net * a3);
+        document.getElementById("outM1Charge").innerText = "₱" + (m1Net * a4).toFixed(2); document.getElementById("outM2Charge").innerText = "₱" + m2Charge.toFixed(2); document.getElementById("outM3Charge").innerText = "₱" + (m3Net * a3).toFixed(2);
     } else {
-        let fleetHtml = "";
         for(let i=1; i<=4; i++){
-            const gross = (Number(document.getElementById("f"+i+"Pres").value)||0) - (Number(document.getElementById("f"+i+"Prev").value)||0);
-            if(gross > 0) {
-                const charge = (gross - calculateSpoilage(gross)) * blackBaseRate;
-                copyCharges += charge;
-                fleetHtml += `<div class="row"><span>Machine ${i}:</span> <span>₱${charge.toFixed(2)}</span></div>`;
-            }
+            const g = (Number(document.getElementById("f"+i+"Pres").value)||0) - (Number(document.getElementById("f"+i+"Prev").value)||0);
+            if(g > 0) charges += (g - Math.round(g*0.02)) * Number(document.getElementById("blackBaseRate").value);
         }
-        document.getElementById("fleetRowsContainer").innerHTML = fleetHtml;
     }
-
-    const subTotal = copyCharges + monthlyRental;
-    let final = subTotal;
-    if (document.getElementById("isVatable").checked) final = round2(subTotal / 1.12) + round2((subTotal / 1.12) * 0.12);
-    if (document.getElementById("hasWht").checked) final -= round2((document.getElementById("isVatable").checked ? subTotal/1.12 : subTotal) * 0.02);
-    
-    document.getElementById("outSubTotal").innerText = "₱" + subTotal.toFixed(2);
-    document.getElementById("outTotal").innerText = "₱" + final.toFixed(2);
-    document.getElementById("results").style.display = "block";
+    const sub = charges + rental, final = (document.getElementById("isVatable").checked ? (round2(sub/1.12) + round2((sub/1.12)*0.12)) : sub) - (document.getElementById("hasWht").checked ? round2((document.getElementById("isVatable").checked ? sub/1.12 : sub) * 0.02) : 0);
+    document.getElementById("outSubTotal").innerText = "₱" + sub.toFixed(2); document.getElementById("outTotal").innerText = "₱" + final.toFixed(2); document.getElementById("results").style.display = "block";
 }
-
-async function processImage(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    document.getElementById('m1Pres').value = "Scanning..."; 
-    const result = await Tesseract.recognize(file, 'eng');
-    document.getElementById('m1Pres').value = result.data.text.replace(/[^0-9]/g, '');
-}
-
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
 </script>
 </body>
