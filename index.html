@@ -49,8 +49,8 @@
             <label style="font-weight:normal; margin-top:10px;"><input type="checkbox" id="isFreeMode" checked> Apply as Free Copies</label>
         </div>
         <label>Monthly Rental</label><input type="number" id="rentalFee" step="0.01">
-        <label><input type="checkbox" id="isVatable"> 12% VAT</label>
-        <label><input type="checkbox" id="hasWht"> 2% WHT</label>
+        <label><input type="checkbox" id="isVatable"> 12% VAT Applicable</label>
+        <label><input type="checkbox" id="hasWht"> 2% Withholding Tax</label>
     </details>
 
     <h3>Meter Input</h3>
@@ -59,15 +59,19 @@
         <label>M1 Previous</label><input type="number" id="m1Prev">
         <label>M2 Present (Black)</label><input type="number" id="m2Pres">
         <label>M2 Previous</label><input type="number" id="m2Prev">
-        <label>M3 Present (A3)</label><input type="number" id="m3Pres">
+        <label>M3 Present (A3 Color)</label><input type="number" id="m3Pres">
         <label>M3 Previous</label><input type="number" id="m3Prev">
     </div>
 
     <div id="fleetMeters" style="display:none;">
-        <label>Machine 1 (Pres/Prev)</label><input type="number" id="f1Pres"><input type="number" id="f1Prev">
-        <label>Machine 2 (Pres/Prev)</label><input type="number" id="f2Pres"><input type="number" id="f2Prev">
-        <label>Machine 3 (Pres/Prev)</label><input type="number" id="f3Pres"><input type="number" id="f3Prev">
-        <label>Machine 4 (Pres/Prev)</label><input type="number" id="f4Pres"><input type="number" id="f4Prev">
+        <label>Machine 1 (Present)</label><input type="number" id="f1Pres">
+        <label>Machine 1 (Previous)</label><input type="number" id="f1Prev">
+        <label>Machine 2 (Present)</label><input type="number" id="f2Pres">
+        <label>Machine 2 (Previous)</label><input type="number" id="f2Prev">
+        <label>Machine 3 (Present)</label><input type="number" id="f3Pres">
+        <label>Machine 3 (Previous)</label><input type="number" id="f3Prev">
+        <label>Machine 4 (Present)</label><input type="number" id="f4Pres">
+        <label>Machine 4 (Previous)</label><input type="number" id="f4Prev">
     </div>
 
     <input type="file" id="cameraInput" accept="image/*" style="display:none;" onchange="processImage(event)">
@@ -81,9 +85,16 @@
             <div class="row"><span>M3 Charge:</span> <span id="outM3Charge">₱0.00</span></div>
         </div>
         <div id="fleetOutput" class="output-card" style="display:none;"><div id="fleetRowsContainer"></div></div>
+        
         <div class="output-card">
-            <div class="row"><span>Sub Total:</span> <span id="outSubTotal">₱0.00</span></div>
-            <div class="row" style="font-weight:bold;"><span>Amount Due:</span> <span id="outTotal">₱0.00</span></div>
+            <div class="row"><span>Total Copy Charges:</span> <span id="outCopyCharge">₱0.00</span></div>
+            <div class="row"><span>Monthly Rental:</span> <span id="outRental">₱0.00</span></div>
+            <div class="row" style="font-weight: bold;"><span>SUB TOTAL:</span> <span id="outSubTotal">₱0.00</span></div><br>
+            <div class="row"><span>Vatable Sales:</span> <span id="outVatable">₱0.00</span></div>
+            <div class="row"><span>VAT-Exempt / Zero Rated:</span> <span id="outExempt">₱0.00</span></div>
+            <div class="row"><span>12% VAT Amount:</span> <span id="outVat">₱0.00</span></div>
+            <div class="row"><span>Less: 2% WHT:</span> <span id="outWht">-₱0.00</span></div>
+            <div class="row" style="font-weight: bold; font-size: 18px; color: var(--accent); border-top: 2px solid #777; padding-top: 8px; margin-top: 8px;"><span>AMOUNT DUE:</span> <span id="outTotal">₱0.00</span></div>
         </div>
     </div>
 </div>
@@ -95,24 +106,77 @@ function toggleMode() { const m = document.getElementById("billingMode").value; 
 async function processImage(event) { const r = await Tesseract.recognize(event.target.files[0], 'eng'); document.getElementById('m1Pres').value = r.data.text.replace(/[^0-9]/g, ''); }
 function clearForm() { location.reload(); }
 function round2(n) { return Math.round((n + Number.EPSILON) * 100) / 100; }
+
 function calculateBilling() {
-    const m = document.getElementById("billingMode").value, rental = Number(document.getElementById("rentalFee").value)||0;
+    const m = document.getElementById("billingMode").value;
+    const rental = Number(document.getElementById("rentalFee").value) || 0;
     let charges = 0;
+    
     if (m === 'standard') {
-        const a4 = Number(document.getElementById("a4Rate").value)||0, a3 = Number(document.getElementById("a3Rate").value)||0, ex = Number(document.getElementById("blackExcessRate").value)||0, base = Number(document.getElementById("blackBaseRate").value)||0, thresh = Number(document.getElementById("m2Threshold").value)||0, free = document.getElementById("isFreeMode").checked;
-        const m1 = ((Number(document.getElementById("m1Pres").value)||0) - (Number(document.getElementById("m1Prev").value)||0)), m3 = ((Number(document.getElementById("m3Pres").value)||0) - (Number(document.getElementById("m3Prev").value)||0)), m2 = ((Number(document.getElementById("m2Pres").value)||0) - (Number(document.getElementById("m2Prev").value)||0));
-        const m1Net = (m1 - m3) - Math.round((m1 - m3)*0.02), m3Net = m3 - Math.round(m3*0.02), m2Net = m2 - Math.round(m2*0.02);
+        const a4 = Number(document.getElementById("a4Rate").value) || 0;
+        const a3 = Number(document.getElementById("a3Rate").value) || 0;
+        const ex = Number(document.getElementById("blackExcessRate").value) || 0;
+        const base = Number(document.getElementById("blackBaseRate").value) || 0;
+        const thresh = Number(document.getElementById("m2Threshold").value) || 0;
+        const free = document.getElementById("isFreeMode").checked;
+        
+        const m1 = ((Number(document.getElementById("m1Pres").value) || 0) - (Number(document.getElementById("m1Prev").value) || 0));
+        const m3 = ((Number(document.getElementById("m3Pres").value) || 0) - (Number(document.getElementById("m3Prev").value) || 0));
+        const m2 = ((Number(document.getElementById("m2Pres").value) || 0) - (Number(document.getElementById("m2Prev").value) || 0));
+        
+        const m1Net = (m1 - m3) - (m1 - m3 < 30 ? 0 : Math.round((m1 - m3) * 0.02));
+        const m3Net = m3 - (m3 < 30 ? 0 : Math.round(m3 * 0.02));
+        const m2Net = m2 - (m2 < 30 ? 0 : Math.round(m2 * 0.02));
+        
         const m2Charge = free ? (Math.max(0, m2Net - thresh) * ex) : ((Math.min(m2Net, thresh) * base) + (Math.max(0, m2Net - thresh) * ex));
+        
         charges = (m1Net * a4) + m2Charge + (m3Net * a3);
-        document.getElementById("outM1Charge").innerText = "₱" + (m1Net * a4).toFixed(2); document.getElementById("outM2Charge").innerText = "₱" + m2Charge.toFixed(2); document.getElementById("outM3Charge").innerText = "₱" + (m3Net * a3).toFixed(2);
+        
+        document.getElementById("outM1Charge").innerText = "₱" + (m1Net * a4).toFixed(2); 
+        document.getElementById("outM2Charge").innerText = "₱" + m2Charge.toFixed(2); 
+        document.getElementById("outM3Charge").innerText = "₱" + (m3Net * a3).toFixed(2);
     } else {
         for(let i=1; i<=4; i++){
-            const g = (Number(document.getElementById("f"+i+"Pres").value)||0) - (Number(document.getElementById("f"+i+"Prev").value)||0);
-            if(g > 0) charges += (g - Math.round(g*0.02)) * Number(document.getElementById("blackBaseRate").value);
+            const g = (Number(document.getElementById("f"+i+"Pres").value) || 0) - (Number(document.getElementById("f"+i+"Prev").value) || 0);
+            if(g > 0) charges += (g - (g < 30 ? 0 : Math.round(g * 0.02))) * Number(document.getElementById("blackBaseRate").value);
         }
     }
-    const sub = charges + rental, final = (document.getElementById("isVatable").checked ? (round2(sub/1.12) + round2((sub/1.12)*0.12)) : sub) - (document.getElementById("hasWht").checked ? round2((document.getElementById("isVatable").checked ? sub/1.12 : sub) * 0.02) : 0);
-    document.getElementById("outSubTotal").innerText = "₱" + sub.toFixed(2); document.getElementById("outTotal").innerText = "₱" + final.toFixed(2); document.getElementById("results").style.display = "block";
+    
+    // Taxes & Subtotals Restoration
+    const subTotal = charges + rental;
+    let vatableSales = 0; 
+    let exemptSales = 0; 
+    let vatAmount = 0; 
+    let whtAmount = 0;
+    let finalAmountDue = subTotal; 
+
+    const isVat = document.getElementById("isVatable").checked;
+    const hasWht = document.getElementById("hasWht").checked;
+
+    if (isVat) {
+        vatableSales = round2(subTotal / 1.12);
+        vatAmount = round2(vatableSales * 0.12);
+        finalAmountDue = vatableSales + vatAmount; 
+    } else {
+        exemptSales = subTotal;
+    }
+
+    const baseForWht = isVat ? vatableSales : exemptSales;
+    if (hasWht) {
+        whtAmount = round2(baseForWht * 0.02);
+        finalAmountDue -= whtAmount;
+    }
+    
+    document.getElementById("outCopyCharge").innerText = "₱" + charges.toFixed(2);
+    document.getElementById("outRental").innerText = "₱" + rental.toFixed(2);
+    document.getElementById("outSubTotal").innerText = "₱" + subTotal.toFixed(2);
+    document.getElementById("outVatable").innerText = "₱" + vatableSales.toFixed(2);
+    document.getElementById("outExempt").innerText = "₱" + exemptSales.toFixed(2);
+    document.getElementById("outVat").innerText = "₱" + vatAmount.toFixed(2);
+    document.getElementById("outWht").innerText = "-₱" + whtAmount.toFixed(2);
+    document.getElementById("outTotal").innerText = "₱" + finalAmountDue.toFixed(2);
+    
+    document.getElementById("results").style.display = "block";
 }
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
 </script>
