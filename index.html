@@ -5,16 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Billing Cheat Sheet</title>
     <link rel="manifest" href="manifest.json">
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 15px; color: #333; }
-        .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h2, h3 { text-align: center; color: #2c3e50; margin-bottom: 10px; margin-top: 20px; }
+        :root { --bg: #f4f4f9; --card: #ffffff; --text: #333; --accent: #1abc9c; --accent-light: #e8f6f3; }
+        .dark-mode { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --accent: #1abc9c; --accent-light: #163630; }
+        body { font-family: Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; transition: 0.3s; }
+        .container { max-width: 400px; margin: auto; background: var(--card); padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .theme-btn { background: #34495e; color: white; border: none; padding: 5px 10px; border-radius: 5px; float: right; cursor: pointer; }
+        h2, h3 { text-align: center; color: var(--accent); margin-bottom: 10px; margin-top: 20px; }
         label { font-weight: bold; display: block; margin-top: 10px; font-size: 14px; }
-        input[type="number"], input[type="text"], select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
+        input[type="number"], select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; background: var(--card); color: var(--text); font-size: 16px; box-sizing: border-box; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        details { background: #e8f6f3; border: 1px solid #1abc9c; border-radius: 5px; padding: 15px; margin-top: 15px; margin-bottom: 20px;}
-        summary { font-weight: bold; color: #16a085; cursor: pointer; padding: 5px 0; outline: none; font-size: 16px;}
+        details { background: var(--accent-light); border: 1px solid var(--accent); border-radius: 5px; padding: 15px; margin-top: 15px; margin-bottom: 20px;}
+        summary { font-weight: bold; cursor: pointer; padding: 5px 0; outline: none; font-size: 16px;}
         .checkbox-group { margin-top: 15px; }
         .checkbox-group label { display: inline-block; margin-top: 0; margin-right: 15px; font-size: 15px; }
         input[type="checkbox"] { transform: scale(1.3); margin-right: 5px; }
@@ -22,16 +24,14 @@
         .btn-main:active { background-color: #2ecc71; }
         .btn-clear { width: 100%; padding: 15px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; font-size: 18px; font-weight: bold; margin-top: 10px; cursor: pointer; }
         .btn-clear:active { background-color: #c0392b; }
-        .btn-scan { background-color: #3498db; color: white; border: none; border-radius: 5px; padding: 10px; margin-top: 5px; margin-left: 5px; font-weight: bold; cursor: pointer; width: 110px; font-size: 12px; }
-        .btn-scan:active { background-color: #2980b9; }
-        .input-group { display: flex; align-items: center; }
-        .output-card { background-color: #e8f6f3; border-left: 5px solid #1abc9c; padding: 15px; margin-top: 15px; border-radius: 5px; }
-        .row { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed #ccc; padding-bottom: 4px; }
+        .output-card { background-color: var(--accent-light); border-left: 5px solid var(--accent); padding: 15px; margin-top: 15px; border-radius: 5px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed #777; padding-bottom: 4px; }
         .row:last-child { border-bottom: none; }
         .highlight-row { color: #2980b9; font-weight: bold; }
-        .total-row { font-weight: bold; font-size: 18px; color: #c0392b; border-top: 2px solid #333; padding-top: 8px; margin-top: 8px; }
-        .charge-row { color: #16a085; font-weight: bold; font-size: 15px; border-top: 1px solid #1abc9c; padding-top: 4px; margin-top: 4px; }
-        .accent-box { background: #d1f2eb; padding: 10px; border-radius: 5px; margin-top: 10px; border: 1px dashed #16a085; }
+        .total-row { font-weight: bold; font-size: 18px; color: #c0392b; border-top: 2px solid #777; padding-top: 8px; margin-top: 8px; }
+        .charge-row { color: var(--accent); font-weight: bold; font-size: 15px; border-top: 1px solid var(--accent); padding-top: 4px; margin-top: 4px; }
+        .accent-box { background: rgba(0,0,0,0.05); padding: 10px; border-radius: 5px; margin-top: 10px; border: 1px dashed var(--accent); }
+        .dark-mode .accent-box { background: rgba(255,255,255,0.05); }
         .mode-box { background: #2c3e50; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
         .mode-box label { color: #ecf0f1; margin-top: 0; font-size: 16px; }
     </style>
@@ -39,6 +39,7 @@
 <body>
 
 <div class="container">
+    <button class="theme-btn" onclick="toggleTheme()">☀️/🌙</button>
     <h2>Billing Calculator</h2>
     
     <div class="mode-box">
@@ -57,7 +58,7 @@
         </div>
         
         <div class="accent-box">
-            <label style="color:#16a085; font-size:16px;"><strong>Black Pricing Model</strong></label>
+            <label style="color:var(--accent); font-size:16px;"><strong>Black Pricing Model</strong></label>
             <div class="grid-2">
                 <div style="grid-column: span 2;"><label>Volume Threshold (Free limit OR Min Copies)</label><input type="number" id="m2Threshold"></div>
                 <div><label>Excess Rate (₱)</label><input type="number" id="blackExcessRate" step="0.01"></div>
@@ -65,7 +66,7 @@
             </div>
             <label style="font-weight:normal; margin-top:15px; display:block;">
                 <input type="checkbox" id="isFreeMode" checked> <strong>Apply as FREE Copies</strong><br>
-                <small style="color:#555; margin-left:25px;">Uncheck this for Tiered "Min Copies" billing. (Ignored in Fleet Mode)</small>
+                <small style="color:#777; margin-left:25px;">Uncheck this for Tiered "Min Copies" billing.</small>
             </label>
         </div>
 
@@ -78,35 +79,31 @@
     </details>
 
     <h3>Meter Input</h3>
-    <input type="file" id="cameraInput" accept="image/*" style="display: none;" onchange="processImage(event)">
 
+    <!-- STANDARD METERS -->
     <div id="standardMeters">
         <div class="grid-2">
-            <div style="grid-column: span 2;">
-                <label>M1 Present (Color)</label>
-                <div class="input-group">
-                    <input type="text" id="m1Pres" placeholder="Type or upload image">
-                    <button class="btn-scan" onclick="document.getElementById('cameraInput').click()">📷 Scan</button>
-                </div>
-            </div>
-            <div><label>M1 Previous</label><input type="number" id="m1Prev"></div>
-            <div><label>M2 Present (Black)</label><input type="number" id="m2Pres"></div>
-            <div><label>M2 Previous</label><input type="number" id="m2Prev"></div>
-            <div><label>M3 Present (A3 Color)</label><input type="number" id="m3Pres"></div>
-            <div><label>M3 Previous</label><input type="number" id="m3Prev"></div>
+            <!-- Using inputmode="numeric" and pattern="[0-9]*" to force the giant numpad -->
+            <div><label>M1 Present (Color)</label><input type="number" id="m1Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>M1 Previous</label><input type="number" id="m1Prev" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>M2 Present (Black)</label><input type="number" id="m2Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>M2 Previous</label><input type="number" id="m2Prev" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>M3 Present (A3 Color)</label><input type="number" id="m3Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>M3 Previous</label><input type="number" id="m3Prev" inputmode="numeric" pattern="[0-9]*"></div>
         </div>
     </div>
 
+    <!-- FLEET METERS -->
     <div id="fleetMeters" style="display: none;">
         <div class="grid-2">
-            <div><label>Machine 1 Present</label><input type="number" id="f1Pres"></div>
-            <div><label>Machine 1 Previous</label><input type="number" id="f1Prev"></div>
-            <div><label>Machine 2 Present</label><input type="number" id="f2Pres"></div>
-            <div><label>Machine 2 Previous</label><input type="number" id="f2Prev"></div>
-            <div><label>Machine 3 Present</label><input type="number" id="f3Pres"></div>
-            <div><label>Machine 3 Previous</label><input type="number" id="f3Prev"></div>
-            <div><label>Machine 4 Present</label><input type="number" id="f4Pres"></div>
-            <div><label>Machine 4 Previous</label><input type="number" id="f4Prev"></div>
+            <div><label>Machine 1 Present</label><input type="number" id="f1Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 1 Previous</label><input type="number" id="f1Prev" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 2 Present</label><input type="number" id="f2Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 2 Previous</label><input type="number" id="f2Prev" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 3 Present</label><input type="number" id="f3Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 3 Previous</label><input type="number" id="f3Prev" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 4 Present</label><input type="number" id="f4Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 4 Previous</label><input type="number" id="f4Prev" inputmode="numeric" pattern="[0-9]*"></div>
         </div>
     </div>
 
@@ -116,6 +113,7 @@
     <div id="results" style="display: none;">
         <h3>Monthly Copy/Print Form</h3>
         
+        <!-- STANDARD OUTPUT -->
         <div id="standardOutput" class="output-card">
             <div class="row"><span>M1 Gross (Color):</span> <span id="outM1Gross">0</span></div>
             <div class="row"><span>Less M3:</span> <span id="outM3Sub">0</span></div>
@@ -126,7 +124,7 @@
             <br>
             <div class="row"><span>M2 Gross (Black):</span> <span id="outM2Gross">0</span></div>
             <div class="row"><span>M2 Spoilage (2%):</span> <span id="outM2Spoil">0</span></div>
-            <div class="row" style="font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><span>M2 NET COPIES:</span> <span id="outM2Net">0</span></div>
+            <div class="row" style="font-weight: bold; border-bottom: 1px solid #777; padding-bottom: 5px;"><span>M2 NET COPIES:</span> <span id="outM2Net">0</span></div>
             <div class="row highlight-row" style="margin-top: 8px;"><span id="lblM2Base">Less Free Copies:</span> <span id="outM2Base">0</span></div>
             <div class="row"><span>Excess Copies:</span> <span id="outM2Excess">0</span></div>
             <div class="row charge-row"><span>M2 Charge:</span> <span id="outM2Charge">₱0.00</span></div>
@@ -137,6 +135,7 @@
             <div class="row charge-row"><span>M3 Charge:</span> <span id="outM3Charge">₱0.00</span></div>
         </div>
 
+        <!-- FLEET OUTPUT -->
         <div id="fleetOutput" class="output-card" style="display: none;">
             <div id="fleetRowsContainer"></div>
         </div>
@@ -156,7 +155,14 @@
 </div>
 
 <script>
-// Toggle UI between Standard and Fleet modes
+// Theme Logic
+function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+}
+if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+
+// View Toggle Logic
 function toggleMode() {
     const mode = document.getElementById("billingMode").value;
     if (mode === 'standard') {
@@ -172,26 +178,15 @@ function toggleMode() {
     }
 }
 
-async function processImage(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const m1PresInput = document.getElementById('m1Pres');
-    m1PresInput.value = "Scanning..."; 
-    try {
-        const result = await Tesseract.recognize(file, 'eng');
-        m1PresInput.value = result.data.text.replace(/[^0-9]/g, '');
-    } catch (error) {
-        alert("Couldn't read the image. Please type it in.");
-        m1PresInput.value = "";
-    }
-}
+// Math Helpers
+function calculateSpoilage(volume) { return volume < 30 ? 0 : Math.round(volume * 0.02); }
+function round2(num) { return Math.round((num + Number.EPSILON) * 100) / 100; }
 
+// Clear inputs
 function clearForm() {
-    // Clear Standard
     document.getElementById("m1Pres").value = ""; document.getElementById("m1Prev").value = "";
     document.getElementById("m2Pres").value = ""; document.getElementById("m2Prev").value = "";
     document.getElementById("m3Pres").value = ""; document.getElementById("m3Prev").value = "";
-    // Clear Fleet
     for(let i=1; i<=4; i++){
         document.getElementById("f"+i+"Pres").value = "";
         document.getElementById("f"+i+"Prev").value = "";
@@ -200,14 +195,11 @@ function clearForm() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function calculateSpoilage(volume) { return volume < 30 ? 0 : Math.round(volume * 0.02); }
-
-function round2(num) { return Math.round((num + Number.EPSILON) * 100) / 100; }
-
+// Core Math
 function calculateBilling() {
     const mode = document.getElementById("billingMode").value;
     
-    // Shared Rates
+    // Shared variables
     const monthlyRental = Number(document.getElementById("rentalFee").value) || 0;
     const isVatable = document.getElementById("isVatable").checked;
     const hasWHT = document.getElementById("hasWht").checked;
@@ -262,7 +254,6 @@ function calculateBilling() {
 
         copyCharges = m1Charge + m2Charge + m3Charge;
 
-        // Update Standard UI
         document.getElementById("outM1Gross").innerText = m1Gross; document.getElementById("outM3Sub").innerText = m3Gross;
         document.getElementById("outM1Adj").innerText = m1Adjusted; document.getElementById("outM1Spoil").innerText = m1Spoil; document.getElementById("outM1Net").innerText = m1Net;
         document.getElementById("outM2Gross").innerText = m2Gross; document.getElementById("outM2Spoil").innerText = m2Spoil; document.getElementById("outM2Net").innerText = m2Net; document.getElementById("outM2Excess").innerText = m2ExcessCopies; 
@@ -270,7 +261,6 @@ function calculateBilling() {
         document.getElementById("outM1Charge").innerText = "₱" + m1Charge.toFixed(2); document.getElementById("outM2Charge").innerText = "₱" + m2Charge.toFixed(2); document.getElementById("outM3Charge").innerText = "₱" + m3Charge.toFixed(2);
 
     } else {
-        // FLEET MODE LOGIC
         let fleetHtml = "";
         for(let i=1; i<=4; i++){
             const pres = Number(document.getElementById("f"+i+"Pres").value) || 0;
@@ -284,8 +274,8 @@ function calculateBilling() {
                 copyCharges += charge;
                 
                 fleetHtml += `
-                <div style="border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 10px;">
-                    <div class="row" style="color:#2c3e50; font-size: 16px;"><strong>Machine ${i}</strong></div>
+                <div style="border-bottom: 2px solid #777; padding-bottom: 10px; margin-bottom: 10px;">
+                    <div class="row" style="color:var(--accent); font-size: 16px;"><strong>Machine ${i}</strong></div>
                     <div class="row"><span>Gross Copies:</span> <span>${gross}</span></div>
                     <div class="row"><span>Less 2% Spoilage:</span> <span>${spoil}</span></div>
                     <div class="row" style="font-weight:bold;"><span>Net Copies:</span> <span>${net}</span></div>
@@ -296,7 +286,7 @@ function calculateBilling() {
         document.getElementById("fleetRowsContainer").innerHTML = fleetHtml;
     }
 
-    // --- Totals and STRICT Accounting Taxes ---
+    // Taxes & Subtotals
     const subTotal = copyCharges + monthlyRental;
 
     let vatableSales = 0; let exemptSales = 0; let vatAmount = 0; let whtAmount = 0;
@@ -317,6 +307,7 @@ function calculateBilling() {
         finalAmountDue = finalAmountDue - whtAmount;
     }
 
+    // Output
     document.getElementById("outCopyCharge").innerText = "₱" + copyCharges.toFixed(2); 
     document.getElementById("outRental").innerText = "₱" + monthlyRental.toFixed(2);
     document.getElementById("outSubTotal").innerText = "₱" + subTotal.toFixed(2); 
