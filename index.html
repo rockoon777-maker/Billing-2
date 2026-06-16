@@ -13,7 +13,7 @@
         .theme-btn { background: #34495e; color: white; border: none; padding: 5px 10px; border-radius: 5px; float: right; cursor: pointer; }
         h2, h3 { text-align: center; color: var(--accent); margin-bottom: 10px; margin-top: 20px; }
         label { font-weight: bold; display: block; margin-top: 10px; font-size: 14px; }
-        input[type="number"], select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; background: var(--card); color: var(--text); font-size: 16px; box-sizing: border-box; }
+        input[type="text"], input[type="number"], select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; background: var(--card); color: var(--text); font-size: 16px; box-sizing: border-box; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         details { background: var(--accent-light); border: 1px solid var(--accent); border-radius: 5px; padding: 15px; margin-top: 15px; margin-bottom: 20px;}
         summary { font-weight: bold; cursor: pointer; padding: 5px 0; outline: none; font-size: 16px;}
@@ -53,16 +53,16 @@
     <details open>
         <summary>📝 Contract Rates & Settings</summary>
         <div class="grid-2">
-            <div><label>A4 Color Rate (₱)</label><input type="number" id="a4Rate" step="0.01" inputmode="decimal"></div>
-            <div><label>A3 Color Rate (₱)</label><input type="number" id="a3Rate" step="0.01" inputmode="decimal"></div>
+            <div><label>A4 Color Rate (₱)</label><input type="text" id="a4Rate" inputmode="decimal"></div>
+            <div><label>A3 Color Rate (₱)</label><input type="text" id="a3Rate" inputmode="decimal"></div>
         </div>
         
         <div class="accent-box">
             <label style="color:var(--accent); font-size:16px;"><strong>Black Pricing Model</strong></label>
             <div class="grid-2">
-                <div style="grid-column: span 2;"><label>Volume Threshold</label><input type="number" id="m2Threshold" inputmode="numeric" pattern="[0-9]*"></div>
-                <div><label>Excess Rate (₱)</label><input type="number" id="blackExcessRate" step="0.01" inputmode="decimal"></div>
-                <div><label>Base / Flat Rate (₱)</label><input type="number" id="blackBaseRate" step="0.01" inputmode="decimal"></div>
+                <div style="grid-column: span 2;"><label>Volume Threshold</label><input type="text" id="m2Threshold" inputmode="numeric" pattern="[0-9]*"></div>
+                <div><label>Excess Rate (₱)</label><input type="text" id="blackExcessRate" inputmode="decimal"></div>
+                <div><label>Base / Flat Rate (₱)</label><input type="text" id="blackBaseRate" inputmode="decimal"></div>
             </div>
             <label style="font-weight:normal; margin-top:15px; display:block;">
                 <input type="checkbox" id="isFreeMode" checked> <strong>Apply as FREE Copies</strong><br>
@@ -70,7 +70,7 @@
             </label>
         </div>
 
-        <div><label>Monthly Rental (₱)</label><input type="number" id="rentalFee" step="0.01" inputmode="decimal"></div>
+        <div><label>Monthly Rental (₱)</label><input type="text" id="rentalFee" inputmode="decimal"></div>
 
         <div class="checkbox-group">
             <label><input type="checkbox" id="isVatable"> 12% VAT Applicable</label><br><br>
@@ -82,25 +82,25 @@
 
     <div id="standardMeters">
         <div class="grid-2">
-            <div><label>M1 Present (Color)</label><input type="number" id="m1Pres" inputmode="numeric" pattern="[0-9]*"></div>
-            <div><label>M1 Previous</label><input type="number" id="m1Prev" inputmode="numeric" pattern="[0-9]*"></div>
-            <div><label>M2 Present (Black)</label><input type="number" id="m2Pres" inputmode="numeric" pattern="[0-9]*"></div>
-            <div><label>M2 Previous</label><input type="number" id="m2Prev" inputmode="numeric" pattern="[0-9]*"></div>
-            <div><label>M3 Present (A3 Color)</label><input type="number" id="m3Pres" inputmode="numeric" pattern="[0-9]*"></div>
-            <div><label>M3 Previous</label><input type="number" id="m3Prev" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>M1 Present (Color)</label><input type="text" id="m1Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>M1 Previous</label><input type="text" id="m1Prev" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>M2 Present (Black)</label><input type="text" id="m2Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>M2 Previous</label><input type="text" id="m2Prev" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>M3 Present (A3 Color)</label><input type="text" id="m3Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>M3 Previous</label><input type="text" id="m3Prev" inputmode="numeric" pattern="[0-9]*"></div>
         </div>
     </div>
 
     <div id="fleetMeters" style="display: none;">
         <div class="grid-2">
-            <div><label>Machine 1 Present</label><input type="number" id="f1Pres" inputmode="numeric" pattern="[0-9]*"></div>
-            <div><label>Machine 1 Previous</label><input type="number" id="f1Prev" inputmode="numeric" pattern="[0-9]*"></div>
-            <div><label>Machine 2 Present</label><input type="number" id="f2Pres" inputmode="numeric" pattern="[0-9]*"></div>
-            <div><label>Machine 2 Previous</label><input type="number" id="f2Prev" inputmode="numeric" pattern="[0-9]*"></div>
-            <div><label>Machine 3 Present</label><input type="number" id="f3Pres" inputmode="numeric" pattern="[0-9]*"></div>
-            <div><label>Machine 3 Previous</label><input type="number" id="f3Prev" inputmode="numeric" pattern="[0-9]*"></div>
-            <div><label>Machine 4 Present</label><input type="number" id="f4Pres" inputmode="numeric" pattern="[0-9]*"></div>
-            <div><label>Machine 4 Previous</label><input type="number" id="f4Prev" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 1 Present</label><input type="text" id="f1Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 1 Previous</label><input type="text" id="f1Prev" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 2 Present</label><input type="text" id="f2Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 2 Previous</label><input type="text" id="f2Prev" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 3 Present</label><input type="text" id="f3Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 3 Previous</label><input type="text" id="f3Prev" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 4 Present</label><input type="text" id="f4Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 4 Previous</label><input type="text" id="f4Prev" inputmode="numeric" pattern="[0-9]*"></div>
         </div>
     </div>
 
