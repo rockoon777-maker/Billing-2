@@ -237,11 +237,13 @@ function calculateBilling() {
             document.getElementById("outM2Base").innerText = "-" + m2BaseCopies;
         } else {
             document.getElementById("lblM2Base").innerText = "Base/Min Copies:";
-            if (m2Net >= m2Threshold) {
+            // FIXED: If threshold exists, Base Copies MUST ALWAYS be at least the threshold
+            if (m2Threshold > 0) {
                 m2BaseCopies = m2Threshold;
-                m2ExcessCopies = m2Net - m2Threshold;
+                m2ExcessCopies = Math.max(0, m2Net - m2Threshold);
             } else {
-                m2BaseCopies = m2Net; m2ExcessCopies = 0;
+                m2BaseCopies = m2Net;
+                m2ExcessCopies = 0;
             }
             m2Charge = (m2BaseCopies * blackBaseRate) + (m2ExcessCopies * blackExcessRate);
             document.getElementById("outM2Base").innerText = m2BaseCopies + " @ ₱" + blackBaseRate.toFixed(2);
