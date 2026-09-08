@@ -10,14 +10,14 @@
         :root { --bg: #f4f4f9; --card: #ffffff; --text: #333; --accent: #1abc9c; --accent-light: #e8f6f3; }
         .dark-mode { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --accent: #1abc9c; --accent-light: #163630; }
         body { font-family: Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 12px; transition: 0.3s; }
-        .container { max-width: 380px; margin: auto; background: var(--card); padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .container { max-width: 400px; margin: auto; background: var(--card); padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
         .theme-btn { background: #34495e; color: white; border: none; padding: 5px 10px; border-radius: 5px; float: right; cursor: pointer; }
         h2, h3 { text-align: center; color: var(--accent); margin-bottom: 10px; margin-top: 15px; }
         label { font-weight: bold; display: block; margin-top: 8px; font-size: 13px; }
         
         input[type="text"], input[type="number"], select { 
             width: 100%; 
-            padding: 6px 10px; 
+            padding: 6px 8px; 
             margin-top: 3px; 
             border: 1px solid #ccc; 
             border-radius: 5px; 
@@ -28,6 +28,12 @@
         }
         
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        
+        /* NEW: Proof of Reading Table Layout */
+        .meter-grid { display: grid; grid-template-columns: 65px 1fr 1fr 1fr; gap: 6px; align-items: center; background: var(--accent-light); padding: 10px 8px; border-radius: 5px; border: 1px dashed var(--accent); margin-top: 10px; }
+        .meter-grid .col-header { font-size: 12px; font-weight: bold; text-align: center; color: var(--accent); }
+        .meter-grid label { font-size: 11px; text-align: right; padding-right: 4px; margin: 0; line-height: 1.1; }
+        .meter-grid input { text-align: center; font-size: 15px; padding: 10px 2px; }
         
         details { background: var(--accent-light); border: 1px solid var(--accent); border-radius: 5px; padding: 12px; margin-top: 12px; margin-bottom: 15px;}
         summary { font-weight: bold; cursor: pointer; padding: 3px 0; outline: none; font-size: 15px;}
@@ -94,52 +100,40 @@
         </div>
     </details>
 
-    <h3>Meter Input</h3>
+    <h3>Proof of Reading</h3>
 
-    <!-- STANDARD METERS (Stacked Layout matching Invoice Form) -->
     <div id="standardMeters">
-        <div class="accent-box" style="margin-top: 0;">
-            <label style="color:var(--accent); font-size:15px; margin-top:0;"><strong>M1 (Color)</strong></label>
-            <label>Present Reading</label><input type="text" id="m1Pres" inputmode="numeric" pattern="[0-9]*">
-            <label>Previous Reading</label><input type="text" id="m1Prev" inputmode="numeric" pattern="[0-9]*">
-        </div>
-        
-        <div class="accent-box">
-            <label style="color:var(--accent); font-size:15px; margin-top:0;"><strong>M2 (Black)</strong></label>
-            <label>Present Reading</label><input type="text" id="m2Pres" inputmode="numeric" pattern="[0-9]*">
-            <label>Previous Reading</label><input type="text" id="m2Prev" inputmode="numeric" pattern="[0-9]*">
-        </div>
-        
-        <div class="accent-box">
-            <label style="color:var(--accent); font-size:15px; margin-top:0;"><strong>M3 (A3 Color)</strong></label>
-            <label>Present Reading</label><input type="text" id="m3Pres" inputmode="numeric" pattern="[0-9]*">
-            <label>Previous Reading</label><input type="text" id="m3Prev" inputmode="numeric" pattern="[0-9]*">
+        <div class="meter-grid">
+            <!-- Headers -->
+            <div></div>
+            <div class="col-header">METER 1<br><small style="color:#777;">(Color)</small></div>
+            <div class="col-header">METER 2<br><small style="color:#777;">(Black)</small></div>
+            <div class="col-header">METER 3<br><small style="color:#777;">(A3)</small></div>
+
+            <!-- Present Row -->
+            <label>PRESENT<br>READING</label>
+            <input type="text" id="m1Pres" inputmode="numeric" pattern="[0-9]*">
+            <input type="text" id="m2Pres" inputmode="numeric" pattern="[0-9]*">
+            <input type="text" id="m3Pres" inputmode="numeric" pattern="[0-9]*">
+
+            <!-- Previous Row -->
+            <label>PREVIOUS<br>READING</label>
+            <input type="text" id="m1Prev" inputmode="numeric" pattern="[0-9]*">
+            <input type="text" id="m2Prev" inputmode="numeric" pattern="[0-9]*">
+            <input type="text" id="m3Prev" inputmode="numeric" pattern="[0-9]*">
         </div>
     </div>
 
-    <!-- FLEET METERS (Also Stacked in a 2-Column Grid) -->
     <div id="fleetMeters" style="display: none;">
         <div class="grid-2">
-            <div class="accent-box" style="margin-top: 0;">
-                <label style="color:var(--accent); margin-top:0;"><strong>Machine 1</strong></label>
-                <label>Present</label><input type="text" id="f1Pres" inputmode="numeric" pattern="[0-9]*">
-                <label>Previous</label><input type="text" id="f1Prev" inputmode="numeric" pattern="[0-9]*">
-            </div>
-            <div class="accent-box" style="margin-top: 0;">
-                <label style="color:var(--accent); margin-top:0;"><strong>Machine 2</strong></label>
-                <label>Present</label><input type="text" id="f2Pres" inputmode="numeric" pattern="[0-9]*">
-                <label>Previous</label><input type="text" id="f2Prev" inputmode="numeric" pattern="[0-9]*">
-            </div>
-            <div class="accent-box">
-                <label style="color:var(--accent); margin-top:0;"><strong>Machine 3</strong></label>
-                <label>Present</label><input type="text" id="f3Pres" inputmode="numeric" pattern="[0-9]*">
-                <label>Previous</label><input type="text" id="f3Prev" inputmode="numeric" pattern="[0-9]*">
-            </div>
-            <div class="accent-box">
-                <label style="color:var(--accent); margin-top:0;"><strong>Machine 4</strong></label>
-                <label>Present</label><input type="text" id="f4Pres" inputmode="numeric" pattern="[0-9]*">
-                <label>Previous</label><input type="text" id="f4Prev" inputmode="numeric" pattern="[0-9]*">
-            </div>
+            <div><label>Machine 1 Present</label><input type="text" id="f1Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 1 Previous</label><input type="text" id="f1Prev" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 2 Present</label><input type="text" id="f2Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 2 Previous</label><input type="text" id="f2Prev" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 3 Present</label><input type="text" id="f3Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 3 Previous</label><input type="text" id="f3Prev" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 4 Present</label><input type="text" id="f4Pres" inputmode="numeric" pattern="[0-9]*"></div>
+            <div><label>Machine 4 Previous</label><input type="text" id="f4Prev" inputmode="numeric" pattern="[0-9]*"></div>
         </div>
     </div>
 
@@ -189,14 +183,12 @@
 </div>
 
 <script>
-// Theme Logic
 function toggleTheme() {
     document.body.classList.toggle('dark-mode');
     localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
 }
 if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
 
-// View Toggle Logic
 function toggleMode() {
     const mode = document.getElementById("billingMode").value;
     if (mode === 'standard') {
@@ -212,15 +204,11 @@ function toggleMode() {
     }
 }
 
-// Math Helpers
 function calculateSpoilage(volume) { return volume < 30 ? 0 : Math.round(volume * 0.02); }
 function round2(num) { return Math.round((num + Number.EPSILON) * 100) / 100; }
-
-// Formatting Helpers (Adds Commas)
 function fmtNum(num) { return num.toLocaleString('en-US'); }
 function fmtCur(num) { return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
-// Clear inputs
 function clearForm() {
     document.getElementById("m1Pres").value = ""; document.getElementById("m1Prev").value = "";
     document.getElementById("m2Pres").value = ""; document.getElementById("m2Prev").value = "";
@@ -233,11 +221,9 @@ function clearForm() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Core Math
 function calculateBilling() {
     const mode = document.getElementById("billingMode").value;
     
-    // Shared variables
     const monthlyRental = Number(document.getElementById("rentalFee").value.replace(/,/g, '')) || 0;
     const isVatable = document.getElementById("isVatable").checked;
     const hasWHT = document.getElementById("hasWht").checked;
@@ -256,17 +242,14 @@ function calculateBilling() {
         const m2Pres = Number(document.getElementById("m2Pres").value.replace(/,/g, '')) || 0; const m2Prev = Number(document.getElementById("m2Prev").value.replace(/,/g, '')) || 0;
         const m3Pres = Number(document.getElementById("m3Pres").value.replace(/,/g, '')) || 0; const m3Prev = Number(document.getElementById("m3Prev").value.replace(/,/g, '')) || 0;
 
-        // M1
         const m1Gross = m1Pres - m1Prev; const m3Gross = m3Pres - m3Prev;
         const m1Adjusted = m1Gross - m3Gross;
         const m1Spoil = calculateSpoilage(m1Adjusted); const m1Net = m1Adjusted - m1Spoil;
         const m1Charge = m1Net * a4ColorRate;
 
-        // M3
         const m3Spoil = calculateSpoilage(m3Gross); const m3Net = m3Gross - m3Spoil;
         const m3Charge = m3Net * a3ColorRate;
 
-        // M2
         const m2Gross = m2Pres - m2Prev; 
         const m2Spoil = calculateSpoilage(m2Gross); const m2Net = m2Gross - m2Spoil;
 
@@ -325,7 +308,6 @@ function calculateBilling() {
         document.getElementById("fleetRowsContainer").innerHTML = fleetHtml;
     }
 
-    // Taxes & Subtotals
     const subTotal = copyCharges + monthlyRental;
 
     let vatableSales = 0; let exemptSales = 0; let vatAmount = 0; let whtAmount = 0;
@@ -346,7 +328,6 @@ function calculateBilling() {
         finalAmountDue = finalAmountDue - whtAmount;
     }
 
-    // Output with formatting
     document.getElementById("outCopyCharge").innerText = "₱" + fmtCur(copyCharges); 
     document.getElementById("outRental").innerText = "₱" + fmtCur(monthlyRental);
     document.getElementById("outSubTotal").innerText = "₱" + fmtCur(subTotal); 
@@ -365,4 +346,3 @@ if('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
-
