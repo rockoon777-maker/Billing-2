@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +9,7 @@
         :root { --bg: #f4f4f9; --card: #ffffff; --text: #333; --accent: #1abc9c; --accent-light: #e8f6f3; }
         .dark-mode { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --accent: #1abc9c; --accent-light: #163630; }
         body { font-family: Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 12px; transition: 0.3s; }
-        .container { max-width: 400px; margin: auto; background: var(--card); padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .container { max-width: 380px; margin: auto; background: var(--card); padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
         .theme-btn { background: #34495e; color: white; border: none; padding: 5px 10px; border-radius: 5px; float: right; cursor: pointer; }
         h2, h3 { text-align: center; color: var(--accent); margin-bottom: 10px; margin-top: 15px; }
         label { font-weight: bold; display: block; margin-top: 8px; font-size: 13px; }
@@ -29,11 +28,14 @@
         
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         
-        /* NEW: Proof of Reading Table Layout */
-        .meter-grid { display: grid; grid-template-columns: 65px 1fr 1fr 1fr; gap: 6px; align-items: center; background: var(--accent-light); padding: 10px 8px; border-radius: 5px; border: 1px dashed var(--accent); margin-top: 10px; }
+        /* Proof of Reading Table Layout */
+        .meter-grid { display: grid; grid-template-columns: 72px 1fr 1fr 1fr; gap: 6px; align-items: center; background: var(--accent-light); padding: 10px 8px; border-radius: 5px; border: 1px dashed var(--accent); margin-top: 10px; }
         .meter-grid .col-header { font-size: 12px; font-weight: bold; text-align: center; color: var(--accent); }
         .meter-grid label { font-size: 11px; text-align: right; padding-right: 4px; margin: 0; line-height: 1.1; }
         .meter-grid input { text-align: center; font-size: 15px; padding: 10px 2px; }
+        
+        /* Live Gross Output Styling */
+        .live-gross { text-align: center; font-size: 16px; font-weight: bold; padding: 5px 0; color: var(--text); border-top: 2px solid #ccc; margin-top: 5px;}
         
         details { background: var(--accent-light); border: 1px solid var(--accent); border-radius: 5px; padding: 12px; margin-top: 12px; margin-bottom: 15px;}
         summary { font-weight: bold; cursor: pointer; padding: 3px 0; outline: none; font-size: 15px;}
@@ -112,18 +114,25 @@
 
             <!-- Present Row -->
             <label>PRESENT<br>READING</label>
-            <input type="text" id="m1Pres" inputmode="numeric" pattern="[0-9]*">
-            <input type="text" id="m2Pres" inputmode="numeric" pattern="[0-9]*">
-            <input type="text" id="m3Pres" inputmode="numeric" pattern="[0-9]*">
+            <input type="text" id="m1Pres" inputmode="numeric" pattern="[0-9]*" oninput="calcLiveGross()">
+            <input type="text" id="m2Pres" inputmode="numeric" pattern="[0-9]*" oninput="calcLiveGross()">
+            <input type="text" id="m3Pres" inputmode="numeric" pattern="[0-9]*" oninput="calcLiveGross()">
 
             <!-- Previous Row -->
             <label>PREVIOUS<br>READING</label>
-            <input type="text" id="m1Prev" inputmode="numeric" pattern="[0-9]*">
-            <input type="text" id="m2Prev" inputmode="numeric" pattern="[0-9]*">
-            <input type="text" id="m3Prev" inputmode="numeric" pattern="[0-9]*">
+            <input type="text" id="m1Prev" inputmode="numeric" pattern="[0-9]*" oninput="calcLiveGross()">
+            <input type="text" id="m2Prev" inputmode="numeric" pattern="[0-9]*" oninput="calcLiveGross()">
+            <input type="text" id="m3Prev" inputmode="numeric" pattern="[0-9]*" oninput="calcLiveGross()">
+            
+            <!-- Live Gross Row -->
+            <label style="color:var(--accent); margin-top:5px;">GROSS<br>COPIES</label>
+            <div class="live-gross" id="m1LiveGross">0</div>
+            <div class="live-gross" id="m2LiveGross">0</div>
+            <div class="live-gross" id="m3LiveGross">0</div>
         </div>
     </div>
 
+    <!-- FLEET METERS -->
     <div id="fleetMeters" style="display: none;">
         <div class="grid-2">
             <div><label>Machine 1 Present</label><input type="text" id="f1Pres" inputmode="numeric" pattern="[0-9]*"></div>
@@ -143,12 +152,13 @@
     <div id="results" style="display: none;">
         <h3>Monthly Copy/Print Form</h3>
         
+        <!-- M1 OUTPUT (Updated Spoilage Logic) -->
         <div id="standardOutput" class="output-card">
             <div class="row"><span>M1 Gross (Color):</span> <span id="outM1Gross">0</span></div>
-            <div class="row"><span>Less M3:</span> <span id="outM3Sub">0</span></div>
-            <div class="row"><span>M1 Adjusted:</span> <span id="outM1Adj">0</span></div>
             <div class="row"><span>M1 Spoilage (2%):</span> <span id="outM1Spoil">0</span></div>
-            <div class="row"><span>M1 NET BILLABLE:</span> <span id="outM1Net">0</span></div>
+            <div class="row" style="font-weight: bold; border-bottom: 1px solid #777; padding-bottom: 5px;"><span>M1 NET COPIES:</span> <span id="outM1Net">0</span></div>
+            <div class="row highlight-row" style="margin-top: 8px;"><span>Less M3 Net Copies:</span> <span id="outM3Sub">0</span></div>
+            <div class="row"><span>M1 BILLABLE:</span> <span id="outM1Billable">0</span></div>
             <div class="row charge-row"><span>M1 Charge:</span> <span id="outM1Charge">₱0.00</span></div>
             <br>
             <div class="row"><span>M2 Gross (Black):</span> <span id="outM2Gross">0</span></div>
@@ -183,12 +193,14 @@
 </div>
 
 <script>
+// Theme Logic
 function toggleTheme() {
     document.body.classList.toggle('dark-mode');
     localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
 }
 if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
 
+// View Toggle Logic
 function toggleMode() {
     const mode = document.getElementById("billingMode").value;
     if (mode === 'standard') {
@@ -204,11 +216,24 @@ function toggleMode() {
     }
 }
 
+// Math & Formatting Helpers
 function calculateSpoilage(volume) { return volume < 30 ? 0 : Math.round(volume * 0.02); }
 function round2(num) { return Math.round((num + Number.EPSILON) * 100) / 100; }
 function fmtNum(num) { return num.toLocaleString('en-US'); }
 function fmtCur(num) { return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
+// Live Gross Calculation
+function calcLiveGross() {
+    const m1 = (Number(document.getElementById("m1Pres").value.replace(/,/g, '')) || 0) - (Number(document.getElementById("m1Prev").value.replace(/,/g, '')) || 0);
+    const m2 = (Number(document.getElementById("m2Pres").value.replace(/,/g, '')) || 0) - (Number(document.getElementById("m2Prev").value.replace(/,/g, '')) || 0);
+    const m3 = (Number(document.getElementById("m3Pres").value.replace(/,/g, '')) || 0) - (Number(document.getElementById("m3Prev").value.replace(/,/g, '')) || 0);
+    
+    document.getElementById("m1LiveGross").innerText = fmtNum(Math.max(0, m1));
+    document.getElementById("m2LiveGross").innerText = fmtNum(Math.max(0, m2));
+    document.getElementById("m3LiveGross").innerText = fmtNum(Math.max(0, m3));
+}
+
+// Clear inputs
 function clearForm() {
     document.getElementById("m1Pres").value = ""; document.getElementById("m1Prev").value = "";
     document.getElementById("m2Pres").value = ""; document.getElementById("m2Prev").value = "";
@@ -217,10 +242,12 @@ function clearForm() {
         document.getElementById("f"+i+"Pres").value = "";
         document.getElementById("f"+i+"Prev").value = "";
     }
+    calcLiveGross();
     document.getElementById("results").style.display = "none";
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// Core Math
 function calculateBilling() {
     const mode = document.getElementById("billingMode").value;
     
@@ -242,16 +269,24 @@ function calculateBilling() {
         const m2Pres = Number(document.getElementById("m2Pres").value.replace(/,/g, '')) || 0; const m2Prev = Number(document.getElementById("m2Prev").value.replace(/,/g, '')) || 0;
         const m3Pres = Number(document.getElementById("m3Pres").value.replace(/,/g, '')) || 0; const m3Prev = Number(document.getElementById("m3Prev").value.replace(/,/g, '')) || 0;
 
-        const m1Gross = m1Pres - m1Prev; const m3Gross = m3Pres - m3Prev;
-        const m1Adjusted = m1Gross - m3Gross;
-        const m1Spoil = calculateSpoilage(m1Adjusted); const m1Net = m1Adjusted - m1Spoil;
-        const m1Charge = m1Net * a4ColorRate;
+        // FIXED M1 MATH
+        const m1Gross = m1Pres - m1Prev; 
+        const m3Gross = m3Pres - m3Prev;
+        
+        const m1Spoil = calculateSpoilage(m1Gross);
+        const m1Net = m1Gross - m1Spoil;
 
-        const m3Spoil = calculateSpoilage(m3Gross); const m3Net = m3Gross - m3Spoil;
+        const m3Spoil = calculateSpoilage(m3Gross);
+        const m3Net = m3Gross - m3Spoil;
+
+        const m1Billable = Math.max(0, m1Net - m3Net);
+        const m1Charge = m1Billable * a4ColorRate;
         const m3Charge = m3Net * a3ColorRate;
 
+        // M2 Math
         const m2Gross = m2Pres - m2Prev; 
-        const m2Spoil = calculateSpoilage(m2Gross); const m2Net = m2Gross - m2Spoil;
+        const m2Spoil = calculateSpoilage(m2Gross); 
+        const m2Net = m2Gross - m2Spoil;
 
         let m2BaseCopies = 0; let m2ExcessCopies = 0; let m2Charge = 0;
 
@@ -276,11 +311,24 @@ function calculateBilling() {
 
         copyCharges = m1Charge + m2Charge + m3Charge;
 
-        document.getElementById("outM1Gross").innerText = fmtNum(m1Gross); document.getElementById("outM3Sub").innerText = fmtNum(m3Gross);
-        document.getElementById("outM1Adj").innerText = fmtNum(m1Adjusted); document.getElementById("outM1Spoil").innerText = fmtNum(m1Spoil); document.getElementById("outM1Net").innerText = fmtNum(m1Net);
-        document.getElementById("outM2Gross").innerText = fmtNum(m2Gross); document.getElementById("outM2Spoil").innerText = fmtNum(m2Spoil); document.getElementById("outM2Net").innerText = fmtNum(m2Net); document.getElementById("outM2Excess").innerText = fmtNum(m2ExcessCopies); 
-        document.getElementById("outM3Gross").innerText = fmtNum(m3Gross); document.getElementById("outM3Spoil").innerText = fmtNum(m3Spoil); document.getElementById("outM3Net").innerText = fmtNum(m3Net);
-        document.getElementById("outM1Charge").innerText = "₱" + fmtCur(m1Charge); document.getElementById("outM2Charge").innerText = "₱" + fmtCur(m2Charge); document.getElementById("outM3Charge").innerText = "₱" + fmtCur(m3Charge);
+        // Populate Standard Output
+        document.getElementById("outM1Gross").innerText = fmtNum(m1Gross); 
+        document.getElementById("outM1Spoil").innerText = fmtNum(m1Spoil); 
+        document.getElementById("outM1Net").innerText = fmtNum(m1Net);
+        document.getElementById("outM3Sub").innerText = fmtNum(m3Net); 
+        document.getElementById("outM1Billable").innerText = fmtNum(m1Billable); 
+        document.getElementById("outM1Charge").innerText = "₱" + fmtCur(m1Charge);
+        
+        document.getElementById("outM2Gross").innerText = fmtNum(m2Gross); 
+        document.getElementById("outM2Spoil").innerText = fmtNum(m2Spoil); 
+        document.getElementById("outM2Net").innerText = fmtNum(m2Net); 
+        document.getElementById("outM2Excess").innerText = fmtNum(m2ExcessCopies); 
+        document.getElementById("outM2Charge").innerText = "₱" + fmtCur(m2Charge);
+        
+        document.getElementById("outM3Gross").innerText = fmtNum(m3Gross); 
+        document.getElementById("outM3Spoil").innerText = fmtNum(m3Spoil); 
+        document.getElementById("outM3Net").innerText = fmtNum(m3Net);
+        document.getElementById("outM3Charge").innerText = "₱" + fmtCur(m3Charge);
 
     } else {
         let fleetHtml = "";
